@@ -192,7 +192,21 @@ router.post("/classifier/predict", async (req, res) => {
 
   try {
     await writeFile(tempFile, Buffer.from(match[2], "base64"));
-    const python = process.env.PYTHON_BIN || "python3";
+    const virtualEnvironmentPython = path.join(
+      projectRoot,
+      ".venv",
+      process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
+    );
+    const configuredPython = process.env.PYTHON_BIN?.trim();
+    const python =
+      (configuredPython && !/^(true|false)$/i.test(configuredPython)
+        ? configuredPython
+        : undefined) ||
+      (existsSync(virtualEnvironmentPython)
+        ? virtualEnvironmentPython
+        : process.platform === "win32"
+          ? "python"
+          : "python3");
     const result = await runProcess(python, [
       path.join(projectRoot, "ml", "predict.py"),
       "--image",
@@ -204,7 +218,10 @@ router.post("/classifier/predict", async (req, res) => {
     const prediction = JSON.parse(output);
     res.json(prediction);
   } catch (error) {
-    logger.error({ error }, "Classifier inference failed");
+    logger.error(
+      { error: error instanceof Error ? error.message : String(error) },
+      "Classifier inference failed",
+    );
     res.status(503).json({
       error:
         "The checkpoint could not run. Check the Python dependencies and model file.",
