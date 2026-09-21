@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: classifier
+    description: Sports image classifier operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /classifier/overview:
+    get:
+      operationId: getClassifierOverview
+      tags: [classifier]
+      summary: Get classifier project overview
+      description: Returns the current model configuration, dataset readiness, training metrics, and class definitions.
+      responses:
+        "200":
+          description: Classifier overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassifierOverview"
+  /classifier/predict:
+    post:
+      operationId: predictClassifier
+      tags: [classifier]
+      summary: Classify one image
+      description: Runs inference against the latest trained EfficientNet-B0 checkpoint. A model must be trained before inference is available.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictionInput"
+      responses:
+        "200":
+          description: Prediction result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prediction"
+        "400":
+          description: Invalid image input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Trained model is not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +79,112 @@ components:
           type: string
       required:
         - status
+    ClassDefinition:
+      type: object
+      properties:
+        slug:
+          type: string
+        label:
+          type: string
+        description:
+          type: string
+        targetCount:
+          type: integer
+      required: [slug, label, description, targetCount]
+    DatasetStatus:
+      type: object
+      properties:
+        totalImages:
+          type: integer
+        trainImages:
+          type: integer
+        validationImages:
+          type: integer
+        testImages:
+          type: integer
+        isReady:
+          type: boolean
+        readinessLabel:
+          type: string
+        split:
+          type: string
+      required: [totalImages, trainImages, validationImages, testImages, isReady, readinessLabel, split]
+    TrainingMetrics:
+      type: object
+      properties:
+        accuracy:
+          type: ["number", "null"]
+        precision:
+          type: ["number", "null"]
+        recall:
+          type: ["number", "null"]
+        epochs:
+          type: ["integer", "null"]
+        lastRun:
+          type: ["string", "null"]
+      required: [accuracy, precision, recall, epochs, lastRun]
+    ClassifierOverview:
+      type: object
+      properties:
+        projectName:
+          type: string
+        model:
+          type: string
+        modelFamily:
+          type: string
+        modelRationale:
+          type: string
+        inputSize:
+          type: integer
+        dataset:
+          $ref: "#/components/schemas/DatasetStatus"
+        classes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClassDefinition"
+        metrics:
+          $ref: "#/components/schemas/TrainingMetrics"
+        inferenceReady:
+          type: boolean
+        inferenceMessage:
+          type: string
+      required: [projectName, model, modelFamily, modelRationale, inputSize, dataset, classes, metrics, inferenceReady, inferenceMessage]
+    PredictionInput:
+      type: object
+      properties:
+        imageData:
+          type: string
+          description: Base64-encoded image data URL.
+          minLength: 32
+        fileName:
+          type: string
+      required: [imageData]
+    Prediction:
+      type: object
+      properties:
+        label:
+          type: string
+        confidence:
+          type: number
+        alternatives:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              confidence:
+                type: number
+            required: [label, confidence]
+        model:
+          type: string
+      required: [label, confidence, alternatives, model]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+      required: [error, code]
 

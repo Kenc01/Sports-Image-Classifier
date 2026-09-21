@@ -1,6 +1,6 @@
-# [Project name]
+# Sports Image Classifier
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An EfficientNet-B0 computer-vision workspace for classifying baseball, softball, and cricket images.
 
 ## Run & Operate
 
@@ -10,6 +10,8 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+- `python3 -m pip install -r ml/requirements.txt` — install ML dependencies
+- `python3 ml/train.py --epochs 10` — train and evaluate the classifier after adding images
 
 ## Stack
 
@@ -22,15 +24,22 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/sports-classifier/` — React dashboard with overview, prediction, and methodology routes
+- `artifacts/api-server/src/routes/classifier.ts` — classifier overview and inference API
+- `lib/api-spec/openapi.yaml` — source of truth for classifier API contracts
+- `ml/train.py` — dataset split, augmentation, transfer learning, evaluation, and checkpoint export
+- `ml/predict.py` — checkpoint-backed single-image inference
+- `ml/data/sports/` — expected dataset folders for `baseball`, `softball`, and `cricket`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- EfficientNet-B0 is used as the default ImageNet transfer-learning model because it balances accuracy and compute for a small three-class dataset.
+- Inference is checkpoint-gated: the API never invents a label; it returns a clear model-not-ready response until a trained checkpoint exists.
+- Dataset counts and evaluation metrics are read from the local ML workspace so the dashboard reflects the actual training state.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The dashboard tracks dataset readiness, explains the model choice and methodology, shows evaluation metrics after training, and runs confidence-scored predictions against the latest checkpoint.
 
 ## User preferences
 
@@ -38,7 +47,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The API expects the ML checkpoint at `ml/checkpoints/efficientnet_b0_sports.pt`.
+- Images must be stored in one class folder each; aim for 300–500 images per class before training.
+- The API reads paths relative to the workspace root, so run the API workflow from the project root as configured.
 
 ## Pointers
 

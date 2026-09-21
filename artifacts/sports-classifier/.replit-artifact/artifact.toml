@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Sports Image Classifier"
+description = "A computer-vision workspace for classifying baseball, softball, and cricket images with transfer learning, dataset tracking, training evaluation, and confidence-scored predictions."
+version = "1.0.0"
+id = "artifacts/sports-classifier"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18761
+
+[services.development]
+run = "pnpm --filter @workspace/sports-classifier run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sports-classifier", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/sports-classifier/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18761"
+BASE_PATH = "/"
