@@ -8,7 +8,9 @@ import { spawn } from "node:child_process";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
-const projectRoot = process.cwd();
+const projectRoot = existsSync(path.join(process.cwd(), "ml"))
+  ? process.cwd()
+  : path.resolve(process.cwd(), "../..");
 const dataRoot = path.join(projectRoot, "ml", "data", "sports");
 const metricsPath = path.join(projectRoot, "ml", "outputs", "metrics.json");
 const checkpointPath = path.join(
@@ -22,19 +24,22 @@ const classes = [
   {
     slug: "baseball",
     label: "Baseball",
-    description: "A baseball, typically recognized by its white cover and red stitching.",
+    description:
+      "A baseball, typically recognized by its white cover and red stitching.",
     targetCount: 300,
   },
   {
     slug: "softball",
     label: "Softball",
-    description: "A larger softball with distinctive seam patterns and a larger visual profile.",
+    description:
+      "A larger softball with distinctive seam patterns and a larger visual profile.",
     targetCount: 300,
   },
   {
     slug: "cricket",
     label: "Cricket",
-    description: "A cricket ball with a dense stitched seam and traditionally red or white finish.",
+    description:
+      "A cricket ball with a dense stitched seam and traditionally red or white finish.",
     targetCount: 300,
   },
 ] as const;
@@ -65,9 +70,17 @@ function runProcess(command: string, args: string[]) {
     child.once("error", reject);
     child.once("close", (code) => {
       if (code === 0) {
-        resolve({ stdout: Buffer.concat(stdout), stderr: Buffer.concat(stderr) });
+        resolve({
+          stdout: Buffer.concat(stdout),
+          stderr: Buffer.concat(stderr),
+        });
       } else {
-        reject(new Error(Buffer.concat(stderr).toString("utf8") || `Process exited with code ${code}`));
+        reject(
+          new Error(
+            Buffer.concat(stderr).toString("utf8") ||
+              `Process exited with code ${code}`,
+          ),
+        );
       }
     });
   });
@@ -76,7 +89,9 @@ function runProcess(command: string, args: string[]) {
 async function countImages(directory: string) {
   try {
     const entries = await readdir(directory, { withFileTypes: true });
-    return entries.filter((entry) => entry.isFile() && /\.(jpe?g|png|webp)$/i.test(entry.name)).length;
+    return entries.filter(
+      (entry) => entry.isFile() && /\.(jpe?g|png|webp)$/i.test(entry.name),
+    ).length;
   } catch {
     return 0;
   }
@@ -84,7 +99,9 @@ async function countImages(directory: string) {
 
 async function loadMetrics(): Promise<Metrics> {
   try {
-    const parsed = JSON.parse(await readFile(metricsPath, "utf8")) as Partial<Metrics>;
+    const parsed = JSON.parse(
+      await readFile(metricsPath, "utf8"),
+    ) as Partial<Metrics>;
     return {
       accuracy: typeof parsed.accuracy === "number" ? parsed.accuracy : null,
       precision: typeof parsed.precision === "number" ? parsed.precision : null,
@@ -148,13 +165,16 @@ router.post("/classifier/predict", async (req, res) => {
 
   if (!existsSync(checkpointPath)) {
     res.status(503).json({
-      error: "No trained checkpoint is available yet. Run ml/train.py after adding the dataset.",
+      error:
+        "No trained checkpoint is available yet. Run ml/train.py after adding the dataset.",
       code: "MODEL_NOT_READY",
     });
     return;
   }
 
-  const match = /^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/i.exec(parsed.data.imageData);
+  const match = /^data:image\/(jpeg|jpg|png|webp);base64,(.+)$/i.exec(
+    parsed.data.imageData,
+  );
   if (!match || match[2].length > 15_000_000) {
     res.status(400).json({
       error: "Only JPEG, PNG, and WebP images under 10 MB are supported.",
@@ -164,7 +184,10 @@ router.post("/classifier/predict", async (req, res) => {
   }
 
   const tempDirectory = path.join(projectRoot, "ml", "tmp");
-  const tempFile = path.join(tempDirectory, `${randomUUID()}.${match[1].toLowerCase() === "jpg" ? "jpeg" : match[1].toLowerCase()}`);
+  const tempFile = path.join(
+    tempDirectory,
+    `${randomUUID()}.${match[1].toLowerCase() === "jpg" ? "jpeg" : match[1].toLowerCase()}`,
+  );
   await mkdir(tempDirectory, { recursive: true });
 
   try {
@@ -183,7 +206,8 @@ router.post("/classifier/predict", async (req, res) => {
   } catch (error) {
     logger.error({ error }, "Classifier inference failed");
     res.status(503).json({
-      error: "The checkpoint could not run. Check the Python dependencies and model file.",
+      error:
+        "The checkpoint could not run. Check the Python dependencies and model file.",
       code: "INFERENCE_FAILED",
     });
   } finally {

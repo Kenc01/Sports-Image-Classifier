@@ -1,0 +1,35 @@
+{
+  "accuracy": 0.3333333333333333,
+  "precision": 0.16666666666666666,
+  "recall": 0.3333333333333333,
+  "epochs": 10,
+  "lastRun": "2026-09-21T15:45:20.104351+00:00",
+  "confusionMatrix": [
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      1
+    ]
+  ],
+  "classCounts": {
+    "baseball": 6,
+    "softball": 6,
+    "cricket": 6
+  },
+  "splitCounts": {
+    "train": 12,
+    "validation": 3,
+    "test": 3
+  },
+  "device": "cpu"
+}
