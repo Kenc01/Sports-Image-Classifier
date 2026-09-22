@@ -108,7 +108,21 @@ components:
           type: string
         split:
           type: string
-      required: [totalImages, trainImages, validationImages, testImages, isReady, readinessLabel, split]
+        classCounts:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+        [
+          totalImages,
+          trainImages,
+          validationImages,
+          testImages,
+          isReady,
+          readinessLabel,
+          split,
+          classCounts,
+        ]
     TrainingMetrics:
       type: object
       properties:
@@ -122,7 +136,13 @@ components:
           type: ["integer", "null"]
         lastRun:
           type: ["string", "null"]
-      required: [accuracy, precision, recall, epochs, lastRun]
+        confusionMatrix:
+          type: ["array", "null"]
+          items:
+            type: array
+            items:
+              type: integer
+      required: [accuracy, precision, recall, epochs, lastRun, confusionMatrix]
     ClassifierOverview:
       type: object
       properties:
@@ -148,7 +168,19 @@ components:
           type: boolean
         inferenceMessage:
           type: string
-      required: [projectName, model, modelFamily, modelRationale, inputSize, dataset, classes, metrics, inferenceReady, inferenceMessage]
+      required:
+        [
+          projectName,
+          model,
+          modelFamily,
+          modelRationale,
+          inputSize,
+          dataset,
+          classes,
+          metrics,
+          inferenceReady,
+          inferenceMessage,
+        ]
     PredictionInput:
       type: object
       properties:
@@ -187,4 +219,3 @@ components:
         code:
           type: string
       required: [error, code]
-

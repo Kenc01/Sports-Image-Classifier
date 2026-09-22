@@ -231,10 +231,10 @@ export default function Overview() {
                 </div>
                 <div className="text-right">
                   <div className="font-display text-lg font-bold">
-                    {item.targetCount.toLocaleString()}
+                    {(dataset.classCounts[item.slug] ?? 0).toLocaleString()}
                   </div>
                   <div className="font-mono-ui text-[9px] uppercase tracking-[.1em] text-muted-foreground">
-                    target
+                    images / {item.targetCount} target
                   </div>
                 </div>
               </div>
@@ -288,6 +288,49 @@ export default function Overview() {
               <p className="text-xs leading-relaxed text-foreground/75">
                 {overview.inferenceMessage}
               </p>
+            </div>
+          )}
+          {overview.metrics.confusionMatrix && (
+            <div className="mt-6 border-t border-border pt-5">
+              <div className="font-mono-ui text-[9px] uppercase tracking-[.12em] text-muted-foreground">
+                Test confusion matrix / actual rows · predicted columns
+              </div>
+              <div className="mt-3 overflow-x-auto">
+                <table className="w-full min-w-[360px] border-collapse text-xs">
+                  <thead>
+                    <tr>
+                      <th className="border-b border-border px-2 py-2 text-left font-mono-ui text-[9px] font-normal uppercase tracking-[.1em] text-muted-foreground">
+                        Actual
+                      </th>
+                      {overview.classes.map((item) => (
+                        <th
+                          key={item.slug}
+                          className="border-b border-border px-2 py-2 text-center font-mono-ui text-[9px] font-normal uppercase tracking-[.1em] text-muted-foreground"
+                        >
+                          {item.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {overview.metrics.confusionMatrix.map((row, rowIndex) => (
+                      <tr key={overview.classes[rowIndex]?.slug ?? rowIndex}>
+                        <th className="border-b border-border px-2 py-2 text-left font-bold">
+                          {overview.classes[rowIndex]?.label ?? "Unknown"}
+                        </th>
+                        {row.map((value, columnIndex) => (
+                          <td
+                            key={`${rowIndex}-${columnIndex}`}
+                            className={`border-b border-border px-2 py-2 text-center font-display text-base font-bold ${rowIndex === columnIndex ? "bg-primary/20" : ""}`}
+                          >
+                            {value}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </section>

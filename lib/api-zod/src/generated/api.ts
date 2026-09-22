@@ -34,7 +34,8 @@ export const GetClassifierOverviewResponse = zod.object({
   "testImages": zod.number().int(),
   "isReady": zod.boolean(),
   "readinessLabel": zod.string(),
-  "split": zod.string()
+  "split": zod.string(),
+  "classCounts": zod.record(zod.string(), zod.number().int())
 }),
   "classes": zod.array(zod.object({
   "slug": zod.string(),
@@ -47,7 +48,8 @@ export const GetClassifierOverviewResponse = zod.object({
   "precision": zod.number().nullable(),
   "recall": zod.number().nullable(),
   "epochs": zod.number().int().nullable(),
-  "lastRun": zod.string().nullable()
+  "lastRun": zod.string().nullable(),
+  "confusionMatrix": zod.array(zod.array(zod.number().int())).nullable()
 }),
   "inferenceReady": zod.boolean(),
   "inferenceMessage": zod.string()

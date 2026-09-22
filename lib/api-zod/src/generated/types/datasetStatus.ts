@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { DatasetStatusClassCounts } from './datasetStatusClassCounts';
 
 export interface DatasetStatus {
   totalImages: number;
@@ -14,4 +15,5 @@ export interface DatasetStatus {
   isReady: boolean;
   readinessLabel: string;
   split: string;
+  classCounts: DatasetStatusClassCounts;
 }

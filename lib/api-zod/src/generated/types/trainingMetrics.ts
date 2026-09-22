@@ -17,4 +17,6 @@ export interface TrainingMetrics {
   epochs: number | null;
   /** @nullable */
   lastRun: string | null;
+  /** @nullable */
+  confusionMatrix: number[][] | null;
 }

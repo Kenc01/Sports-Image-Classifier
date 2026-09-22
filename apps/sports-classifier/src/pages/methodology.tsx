@@ -75,7 +75,8 @@ export default function Methodology() {
           <div className="mt-9 flex items-center gap-3 border-t border-background/15 pt-5">
             <GitBranch size={17} className="text-primary" />
             <span className="font-mono-ui text-[10px] uppercase tracking-[.13em] text-background/55">
-              {overview?.dataset?.split ?? "stratified split"} / class-balanced
+              {overview?.dataset?.split ?? "stratified split"} / class
+              proportions preserved
             </span>
           </div>
         </div>
@@ -155,7 +156,7 @@ export default function Methodology() {
             <p className="font-mono-ui text-[10px] uppercase tracking-[.14em] text-secondary">
               Adapt
             </p>
-            <p className="mt-2 font-display text-xl font-bold">Fine-tune</p>
+            <p className="mt-2 font-display text-xl font-bold">Train head</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Learn the sport-specific signal
             </p>

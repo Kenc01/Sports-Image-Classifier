@@ -47,3 +47,12 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# ML checkpoints (large binary files)
+ml/checkpoints/*.pt
+ml/tmp/

@@ -16,6 +16,8 @@ export interface ClassDefinition {
   targetCount: number;
 }
 
+export type DatasetStatusClassCounts = {[key: string]: number};
+
 export interface DatasetStatus {
   totalImages: number;
   trainImages: number;
@@ -24,6 +26,7 @@ export interface DatasetStatus {
   isReady: boolean;
   readinessLabel: string;
   split: string;
+  classCounts: DatasetStatusClassCounts;
 }
 
 export interface TrainingMetrics {
@@ -37,6 +40,8 @@ export interface TrainingMetrics {
   epochs: number | null;
   /** @nullable */
   lastRun: string | null;
+  /** @nullable */
+  confusionMatrix: number[][] | null;
 }
 
 export interface ClassifierOverview {

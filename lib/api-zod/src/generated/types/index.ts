@@ -9,6 +9,7 @@
 export * from './classDefinition';
 export * from './classifierOverview';
 export * from './datasetStatus';
+export * from './datasetStatusClassCounts';
 export * from './errorResponse';
 export * from './healthStatus';
 export * from './prediction';

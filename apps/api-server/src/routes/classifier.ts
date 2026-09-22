@@ -50,6 +50,7 @@ type Metrics = {
   recall: number | null;
   epochs: number | null;
   lastRun: string | null;
+  confusionMatrix: number[][] | null;
 };
 
 const emptyMetrics: Metrics = {
@@ -58,6 +59,7 @@ const emptyMetrics: Metrics = {
   recall: null,
   epochs: null,
   lastRun: null,
+  confusionMatrix: null,
 };
 
 function runProcess(command: string, args: string[]) {
@@ -88,7 +90,10 @@ function runProcess(command: string, args: string[]) {
 
 async function countImages(directory: string) {
   try {
-    const entries = await readdir(directory, { withFileTypes: true });
+    const entries = await readdir(directory, {
+      withFileTypes: true,
+      recursive: true,
+    });
     return entries.filter(
       (entry) => entry.isFile() && /\.(jpe?g|png|webp)$/i.test(entry.name),
     ).length;
@@ -108,6 +113,9 @@ async function loadMetrics(): Promise<Metrics> {
       recall: typeof parsed.recall === "number" ? parsed.recall : null,
       epochs: typeof parsed.epochs === "number" ? parsed.epochs : null,
       lastRun: typeof parsed.lastRun === "string" ? parsed.lastRun : null,
+      confusionMatrix: Array.isArray(parsed.confusionMatrix)
+        ? parsed.confusionMatrix
+        : null,
     };
   } catch {
     return emptyMetrics;
@@ -131,7 +139,7 @@ router.get("/classifier/overview", async (_req, res) => {
     model: "EfficientNet-B0",
     modelFamily: "Efficient CNN",
     modelRationale:
-      "EfficientNet-B0 offers a strong accuracy-to-size trade-off for a small, balanced dataset. It is more expressive than MobileNet for fine visual differences while using less compute than ResNet-50 or a transformer.",
+      "EfficientNet-B0 offers a strong accuracy-to-size trade-off for a small dataset. It is more expressive than MobileNet for fine visual differences while using less compute than ResNet-50 or a transformer.",
     inputSize: 224,
     dataset: {
       totalImages,
@@ -143,6 +151,9 @@ router.get("/classifier/overview", async (_req, res) => {
         ? "Ready for training"
         : "Add 300–500 images per class",
       split: "70% train · 15% validation · 15% test",
+      classCounts: Object.fromEntries(
+        classes.map((item, index) => [item.slug, counts[index]]),
+      ),
     },
     classes,
     metrics,
