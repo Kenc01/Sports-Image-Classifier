@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="paper-noise min-h-[100dvh] bg-background text-foreground">
       <div className="flex min-h-[100dvh]">
-        <aside className="hidden w-[248px] shrink-0 flex-col justify-between bg-sidebar px-5 py-6 text-sidebar-foreground md:flex">
+        <aside className="sticky top-0 h-[100dvh] hidden w-[248px] shrink-0 flex-col justify-between bg-sidebar px-5 py-6 text-sidebar-foreground md:flex">
           <div>
             <Link href="/" data-testid="link-brand" className="mb-12 flex items-center gap-3">
               <div className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[4px_4px_0_hsl(var(--secondary))]">

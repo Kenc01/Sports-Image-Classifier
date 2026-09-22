@@ -1,35 +1,35 @@
 {
-  "accuracy": 0.9791666666666666,
-  "precision": 0.9059139784946236,
-  "recall": 0.9083333333333333,
+  "accuracy": 0.9521276595744681,
+  "precision": 0.9508059786884074,
+  "recall": 0.9541666666666666,
   "epochs": 10,
-  "lastRun": "2026-09-22T04:43:50.669936+00:00",
+  "lastRun": "2026-09-22T14:54:32.577125+00:00",
   "confusionMatrix": [
     [
-      78,
-      1,
+      75,
+      4,
       1
     ],
     [
-      0,
-      3,
-      1
+      2,
+      46,
+      0
     ],
     [
+      2,
       0,
-      0,
-      60
+      58
     ]
   ],
   "classCounts": {
     "baseball": 529,
-    "softball": 23,
+    "softball": 320,
     "cricket": 400
   },
   "splitCounts": {
-    "train": 666,
-    "validation": 142,
-    "test": 144
+    "train": 874,
+    "validation": 187,
+    "test": 188
   },
   "device": "cpu"
 }
