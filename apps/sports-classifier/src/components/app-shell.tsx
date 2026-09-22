@@ -94,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="size-1.5 rounded-full bg-primary" />
                 <span className="font-mono-ui text-[10px] uppercase tracking-[.16em] text-muted-foreground">API connected</span>
               </div>
-              <div className="grid size-9 place-items-center rounded-full bg-secondary font-display text-xs font-bold text-secondary-foreground">SV</div>
+              <div className="grid size-9 place-items-center rounded-full bg-secondary font-display text-xs font-bold text-secondary-foreground">KL</div>
             </div>
           </header>
 
